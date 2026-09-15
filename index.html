@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JURN45 - Portal Berita SMAN 45 Jakarta</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            700: '#1b365d',
+                            800: '#0f2647',
+                            900: '#0a192f',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* CSS Khusus Penuh Layar untuk Blogger Override */
+        body, html {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            min-height: 100vh !important;
+            background-color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+        /* Sembunyikan elemen bawaan Blogger jika dipasang di post/page */
+        #header-wrapper, .sidebar-container, .post-footer, #comments, .blog-pager {
+            display: none !important;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .modal-active {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- ELEMEN TERSEMBUNYI UNTUK THUMBNAIL BLOGGER -->
+    <div style="display:none;" id="blogger-thumbnail-container">
+        <img src="https://placehold.co/600x400/0a192f/f59e0b?text=JURN45+SMAN+45+JAKARTA" alt="Thumbnail Post Jurn45" />
+    </div>
+
+    <!-- HEADER & NAVIGASI UTAMA -->
+    <header class="sticky top-0 z-40 bg-navy-900 text-white shadow-md border-b-2 border-gold-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & Identitas SMAN 45 -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-12 h-12 bg-gold-500 rounded-full flex items-center justify-center font-bold text-navy-900 text-xl border-2 border-white shadow">
+                        45
+                    </div>
+                    <div>
+                        <div class="font-extrabold text-xl sm:text-2xl tracking-tight text-white flex items-center gap-2">
+                            JURN45 <span class="bg-gold-500 text-navy-900 text-xs px-2 py-0.5 rounded-full font-bold">PRESS</span>
+                        </div>
+                        <div class="text-xs text-slate-300 font-medium tracking-wide">SMAN 45 JAKARTA - CERDAS & BERKARAKTER</div>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu Navigasi Publik -->
+                <nav class="hidden md:flex items-center space-x-1 lg:space-x-4 font-medium text-sm">
+                    <button onclick="switchTab('home')" class="nav-btn px-3 py-2 rounded-lg hover:bg-navy-800 hover:text-gold-400 transition text-white">Beranda</button>
+                    <button onclick="filterCategory('Kabar 45')" class="nav-btn px-3 py-2 rounded-lg hover:bg-navy-800 hover:text-gold-400 transition text-slate-200">Kabar 45</button>
+                    <button onclick="filterCategory('Opini & Artikel')" class="nav-btn px-3 py-2 rounded-lg hover:bg-navy-800 hover:text-gold-400 transition text-slate-200">Opini</button>
+                    <button onclick="filterCategory('Prestasi')" class="nav-btn px-3 py-2 rounded-lg hover:bg-navy-800 hover:text-gold-400 transition text-slate-200">Prestasi</button>
+                    <button onclick="filterCategory('Karya Siswa')" class="nav-btn px-3 py-2 rounded-lg hover:bg-navy-800 hover:text-gold-400 transition text-slate-200">Karya Siswa</button>
+                    <button onclick="filterCategory('Galeri')" class="nav-btn px-3 py-2 rounded-lg hover:bg-navy-800 hover:text-gold-400 transition text-slate-200">Galeri</button>
+                </nav>
+
+                <!-- Tombol Portal Redaksi / Dashboard User -->
+                <div class="flex items-center space-x-3">
+                    <div id="auth-button-container">
+                        <button onclick="openLoginModal()" class="bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold px-4 py-2 rounded-lg text-sm transition flex items-center shadow">
+                            <i class="fas fa-user-lock mr-2"></i> Portal Redaksi
+                        </button>
+                    </div>
+                    <!-- Mobile Hamburger Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-slate-200 hover:text-white p-2">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden bg-navy-800 px-4 pt-2 pb-4 border-t border-navy-700 space-y-2">
+            <button onclick="switchTab('home'); toggleMobileMenu();" class="block w-full text-left text-white font-medium py-2 px-3 rounded hover:bg-navy-700">Beranda</button>
+            <button onclick="filterCategory('Kabar 45'); toggleMobileMenu();" class="block w-full text-left text-slate-200 py-2 px-3 rounded hover:bg-navy-700">Kabar 45</button>
+            <button onclick="filterCategory('Opini & Artikel'); toggleMobileMenu();" class="block w-full text-left text-slate-200 py-2 px-3 rounded hover:bg-navy-700">Opini & Artikel</button>
+            <button onclick="filterCategory('Prestasi'); toggleMobileMenu();" class="block w-full text-left text-slate-200 py-2 px-3 rounded hover:bg-navy-700">Prestasi</button>
+            <button onclick="filterCategory('Karya Siswa'); toggleMobileMenu();" class="block w-full text-left text-slate-200 py-2 px-3 rounded hover:bg-navy-700">Karya Siswa</button>
+            <button onclick="filterCategory('Galeri'); toggleMobileMenu();" class="block w-full text-left text-slate-200 py-2 px-3 rounded hover:bg-navy-700">Galeri Liputan</button>
+        </div>
+    </header>
+
+    <!-- PREVIEW MODE BANNER -->
+    <div id="preview-banner" class="bg-amber-500 text-slate-900 font-bold px-4 py-1.5 text-xs text-center flex justify-between items-center shadow-inner">
+        <span class="mx-auto flex items-center"><i class="fas fa-info-circle mr-2"></i> RUNNING IN PREVIEW MODE (DATA DUMMY INTERAKTIF)</span>
+        <span class="text-[10px] bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono">IS_PREVIEW = true</span>
+    </div>
+
+    <!-- ALERT CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- SECTION 1: FEED PUBLIK (BERANDA) -->
+        <section id="tab-home" class="tab-content space-y-8">
+            
+            <!-- Headline Hero Slider/Grid -->
+            <div id="headline-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Headline artikel utama dipasang via JS -->
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="relative w-full md:w-96">
+                    <i class="fas fa-search absolute left-3 top-3.5 text-slate-400"></i>
+                    <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Cari artikel, topik, atau jurnalis..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy-700">
+                </div>
+                <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kategori:</span>
+                    <button onclick="filterCategory('ALL')" class="cat-chip bg-navy-900 text-white px-3 py-1 rounded-full text-xs font-medium">Semua</button>
+                    <button onclick="filterCategory('Kabar 45')" class="cat-chip bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Kabar 45</button>
+                    <button onclick="filterCategory('Opini & Artikel')" class="cat-chip bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Opini</button>
+                    <button onclick="filterCategory('Prestasi')" class="cat-chip bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Prestasi</button>
+                    <button onclick="filterCategory('Karya Siswa')" class="cat-chip bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Karya Siswa</button>
+                </div>
+            </div>
+
+            <!-- News Grid Content -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-navy-900 flex items-center">
+                        <i class="fas fa-newspaper text-gold-500 mr-2"></i> Berita Terkini
+                    </h2>
+                    <span id="article-count-badge" class="text-xs text-slate-500 font-medium">Menampilkan artikel terbit</span>
+                </div>
+                
+                <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Cards dipublikasikan via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: DASHBOARD REDAKSI (TERPROTEKSI) -->
+        <section id="tab-dashboard" class="tab-content hidden space-y-6">
+            
+            <!-- Header User & Stats Bar -->
+            <div class="bg-navy-900 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-2xl font-bold" id="dashboard-user-name">Nama Redaksi</h2>
+                        <span id="dashboard-user-role" class="bg-gold-500 text-navy-900 text-xs font-bold px-3 py-1 rounded-full uppercase">Role</span>
+                    </div>
+                    <p class="text-slate-300 text-sm mt-1">Sistem Informasi Manajemen Berita & Approval Jurn45 SMAN 45 Jakarta</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="openNewArticleModal()" class="bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold px-4 py-2.5 rounded-xl text-sm transition shadow flex items-center">
+                        <i class="fas fa-pen-nib mr-2"></i> Buat Artikel Baru
+                    </button>
+                    <button onclick="logout()" class="bg-slate-700 hover:bg-red-600 text-white font-medium px-4 py-2.5 rounded-xl text-sm transition">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Keluar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Cards Overview -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Artikel Terbit</div>
+                    <div class="text-3xl font-extrabold text-navy-900 mt-1" id="stat-published">0</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="text-amber-600 text-xs font-bold uppercase tracking-wider">Menunggu Approval</div>
+                    <div class="text-3xl font-extrabold text-amber-600 mt-1" id="stat-pending">0</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="text-slate-500 text-xs font-bold uppercase tracking-wider">Draf Saya</div>
+                    <div class="text-3xl font-extrabold text-slate-700 mt-1" id="stat-drafts">0</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="text-red-500 text-xs font-bold uppercase tracking-wider">Ditolak / Revisi</div>
+                    <div class="text-3xl font-extrabold text-red-600 mt-1" id="stat-rejected">0</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Inner Navigation Tabs -->
+            <div class="border-b border-slate-200 flex space-x-4">
+                <button onclick="switchDashTab('my-articles')" id="dashtab-btn-my-articles" class="py-3 px-4 font-bold text-sm text-navy-900 border-b-2 border-navy-900">
+                    <i class="fas fa-folder-open mr-2"></i> Kelola Artikel Saya
+                </button>
+                <button onclick="switchDashTab('approval')" id="dashtab-btn-approval" class="dashtab-pemred-only py-3 px-4 font-semibold text-sm text-slate-500 border-b-2 border-transparent hover:text-navy-900">
+                    <i class="fas fa-clipboard-check mr-2 text-amber-500"></i> Review & Approval Pemred
+                </button>
+                <button onclick="switchDashTab('users')" id="dashtab-btn-users" class="dashtab-pemred-only py-3 px-4 font-semibold text-sm text-slate-500 border-b-2 border-transparent hover:text-navy-900">
+                    <i class="fas fa-users-cog mr-2"></i> Manajemen Redaksi
+                </button>
+            </div>
+
+            <!-- TAB DASHBOARD 1: ARTIKEL SAYA -->
+            <div id="dashtab-my-articles" class="dashtab-content">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800">Daftar Berita & Draf Jurnalis</h3>
+                        <span class="text-xs text-slate-500">Menampilkan berita yang Anda tulis</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-600 uppercase text-xs">
+                                <tr>
+                                    <th class="py-3 px-4">Artikel</th>
+                                    <th class="py-3 px-4">Kategori</th>
+                                    <th class="py-3 px-4">Tanggal</th>
+                                    <th class="py-3 px-4">Status Review</th>
+                                    <th class="py-3 px-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-my-articles" class="divide-y divide-slate-100">
+                                <!-- Data draf jurnalis -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB DASHBOARD 2: APPROVAL PEMRED -->
+            <div id="dashtab-approval" class="dashtab-content hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-amber-50">
+                        <div>
+                            <h3 class="font-bold text-amber-900"><i class="fas fa-tasks mr-2"></i> Antrean Review Artikel (Pemred)</h3>
+                            <p class="text-xs text-amber-700">Setujui draf untuk diterbitkan atau kembalikan dengan catatan revisi</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-600 uppercase text-xs">
+                                <tr>
+                                    <th class="py-3 px-4">Judul & Jurnalis</th>
+                                    <th class="py-3 px-4">Kategori</th>
+                                    <th class="py-3 px-4">Tgl Pengajuan</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4 text-center">Tindakan Approval</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-approval" class="divide-y divide-slate-100">
+                                <!-- Data pengajuan approval -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB DASHBOARD 3: MANAJEMEN REDAKSI -->
+            <div id="dashtab-users" class="dashtab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-navy-900 mb-3"><i class="fas fa-user-plus text-gold-500 mr-2"></i> Tambah Anggota Redaksi</h3>
+                        <form onsubmit="handleAddUser(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap</label>
+                                <input type="text" id="new-user-fullname" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Username</label>
+                                <input type="text" id="new-user-username" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+                                <input type="password" id="new-user-password" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Role / Peran Redaksi</label>
+                                <select id="new-user-role" class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                                    <option value="Reporter">Reporter / Jurnalis</option>
+                                    <option value="Fotografer">Fotografer / Dok</option>
+                                    <option value="Pemred">Pemimpin Redaksi</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-navy-900 text-white font-bold py-2 rounded-lg text-sm hover:bg-navy-800 transition">
+                                <i class="fas fa-save mr-1"></i> Daftarkan User
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="md:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 font-bold text-navy-900">
+                            Daftar Anggota Tim Redaksi Jurn45
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-slate-600 uppercase text-xs">
+                                    <tr>
+                                        <th class="py-3 px-4">Nama Lengkap</th>
+                                        <th class="py-3 px-4">Username</th>
+                                        <th class="py-3 px-4">Role</th>
+                                        <th class="py-3 px-4">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-users" class="divide-y divide-slate-100">
+                                    <!-- List pengguna -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- MODAL 1: LOGIN PORTAL REDAKSI -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100 relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-navy-900 text-gold-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl font-bold border-2 border-gold-500 shadow">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3 class="text-xl font-bold text-navy-900">Portal Redaksi Jurn45</h3>
+                <p class="text-slate-500 text-xs mt-1">SMAN 45 Jakarta News Management System</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Username</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" id="login-username" required placeholder="Contoh: pemred atau reporter" class="w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-navy-800">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-3 top-3 text-slate-400"></i>
+                        <input type="password" id="login-password" required placeholder="Masukkan password" class="w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-navy-800">
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-xs text-amber-800">
+                    <span class="font-bold block mb-1">Akun Dummy Demo:</span>
+                    <ul class="list-disc pl-4 space-y-0.5">
+                        <li>Pemred: <b>pemred</b> / <b>jurn45hebat</b></li>
+                        <li>Reporter: <b>reporter</b> / <b>jurn45hebat</b></li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="w-full bg-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl transition text-sm shadow-md">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Masuk Ke Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: BACA ARTIKEL / DETAIL READER -->
+    <div id="read-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden relative">
+            <button onclick="closeReadModal()" class="absolute top-4 right-4 z-10 bg-slate-900/50 hover:bg-slate-900 text-white w-9 h-9 rounded-full flex items-center justify-center transition">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="read-modal-content" class="overflow-y-auto p-6 md:p-8 space-y-4">
+                <!-- Konten dinamis dari JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: EDITOR ARTIKEL BARU / EDIT -->
+    <div id="editor-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden relative">
+            <div class="bg-navy-900 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="editor-title-text"><i class="fas fa-pen-square text-gold-500 mr-2"></i> Tulis Artikel Berita Baru</h3>
+                <button onclick="closeEditorModal()" class="text-slate-300 hover:text-white text-lg"><i class="fas fa-times"></i></button>
+            </div>
+
+            <form onsubmit="handleSaveArticle(event)" class="overflow-y-auto p-6 space-y-4">
+                <input type="hidden" id="edit-article-id">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Judul Artikel / Berita *</label>
+                    <input type="text" id="editor-judul" required placeholder="Judul berita yang menarik..." class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-navy-800">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kategori Berita *</label>
+                        <select id="editor-kategori" required class="w-full px-4 py-2.5 border rounded-xl text-sm bg-white">
+                            <option value="Kabar 45">Kabar 45 (Pengumuman/Kegiatan)</option>
+                            <option value="Opini & Artikel">Opini & Artikel</option>
+                            <option value="Prestasi">Prestasi Siswa/Guru</option>
+                            <option value="Karya Siswa">Karya Siswa (Puisi/Sastra)</option>
+                            <option value="Galeri">Galeri Liputan Foto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">URL Gambar Cover / Thumbnail</label>
+                        <input type="url" id="editor-thumbnail" placeholder="https://..." class="w-full px-4 py-2.5 border rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ringkasan Singkat (Summary) *</label>
+                    <textarea id="editor-ringkasan" rows="2" required placeholder="Ringkasan 1-2 kalimat untuk deskripsi kartu..." class="w-full px-4 py-2 border rounded-xl text-sm"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Isi Artikel Berita (Format HTML/Text) *</label>
+                    <textarea id="editor-isi" rows="8" required placeholder="Tuliskan isi berita secara detail di sini..." class="w-full px-4 py-2.5 border rounded-xl text-sm font-sans leading-relaxed"></textarea>
+                </div>
+
+                <div class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <input type="checkbox" id="editor-is-headline" class="w-4 h-4 text-navy-900 rounded">
+                    <label for="editor-is-headline" class="text-xs font-semibold text-slate-700">Tampilkan sebagai Banner Headline (Utama)</label>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeEditorModal()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-100">Batal</button>
+                    <button type="submit" name="action_type" value="draft" class="px-5 py-2.5 rounded-xl bg-slate-700 text-white font-medium text-sm hover:bg-slate-800">Simpan Draf</button>
+                    <button type="submit" name="action_type" value="submit" class="px-5 py-2.5 rounded-xl bg-gold-500 text-navy-900 font-bold text-sm hover:bg-gold-600 shadow">Kirim ke Pemred</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: CATATAN REVISI / REJECTION PEMRED -->
+    <div id="reject-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <h3 class="text-lg font-bold text-red-600 mb-2"><i class="fas fa-exclamation-triangle mr-2"></i> Pengembalian / Catatan Revisi</h3>
+            <p class="text-xs text-slate-500 mb-4">Berikan alasan mengapa draf ini ditolak atau memerlukan perbaikan.</p>
+            <input type="hidden" id="reject-article-id">
+            <textarea id="reject-notes" rows="4" placeholder="Tuliskan catatan revisi untuk jurnalis..." class="w-full p-3 border border-slate-300 rounded-xl text-sm mb-4"></textarea>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeRejectModal()" class="px-4 py-2 rounded-lg border text-xs font-semibold text-slate-600">Batal</button>
+                <button onclick="confirmRejectArticle()" class="px-4 py-2 rounded-lg bg-red-600 text-white text-xs font-bold">Kirim Catatan & Reffuse</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SAKLAR DEPLOYMENT
+        const IS_PREVIEW = true; // True: Canvas Preview Mode (Data Dummy), False: Connect to GAS URL
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbz2XMbNLIWgSTtUGP53Rn-sQTWglsYrNunRYDOtcrnmSjvnlU4e9gPQYlX8TJRcus8O/exec";
+
+        // DATA DUMMY AWAL (Digunakan jika IS_PREVIEW = true)
+        let articlesData = [
+            {
+                ID_Berita: "BRT-4501",
+                Judul: "SMAN 45 Jakarta Raih Juara 1 Lomba Jurnalistik Pelajar DKI 2026",
+                Slug: "sman-45-juara-jurnalistik-2026",
+                Kategori: "Prestasi",
+                Isi_Berita: "<p>Tim Ekstrakulikuler Jurnalistik SMAN 45 Jakarta (Jurn45) berhasil mengukir prestasi gemilang dengan meraih Juara 1 dalam Festival Jurnalistik Pelajar se-DKI Jakarta yang diselenggarakan di Gedung Dinas Pendidikan.</p><br><p>Karya feature reportase karya tim Jurn45 dinilai unggul dari segi kedalaman riset dan estetika penyampaian berita. Pembina Jurnalistik menyampaikan apresiasi setinggi-tingginya atas kerja keras para anggota.</p>",
+                Ringkasan: "Tim Jurn45 membanggakan sekolah dengan meraih predikat terbaik dalam Festival Jurnalistik Pelajar tingkat DKI Jakarta.",
+                URL_Thumbnail: "https://placehold.co/800x450/0f2647/fbbf24?text=PRESTASI+JUARA+1+JURN45",
+                Penulis_ID: "reporter",
+                Penulis_Nama: "Ahmad Jurnalis",
+                Tanggal: "2026-03-12 10:30",
+                Status_Approval: "Approved",
+                Catatan_Pemred: "",
+                Is_Headline: true,
+                View_Count: 342
+            },
+            {
+                ID_Berita: "BRT-4502",
+                Judul: "Pelaksanaan Pekan Olahraga & Seni (PORSENI) 45 Berlangsung Meriah",
+                Slug: "porseni-45-meriah",
+                Kategori: "Kabar 45",
+                Isi_Berita: "<p>Kegiatan tahunan PORSENI SMAN 45 Jakarta dibuka secara resmi oleh Kepala Sekolah pada hari Senin. Acara diawali dengan jalan santai bersama seluruh warga sekolah dan penampilan pentas seni dari masing-masing kelas.</p><br><p>Pertandingan futsal, basket, dan esporst menjadi cabang yang paling ramai disaksikan pendukung masing-masing angkatan.</p>",
+                Ringkasan: "Keriuhan dan semangat sportifitas mewarnai pembukaan PORSENI SMAN 45 Jakarta tahun 2026.",
+                URL_Thumbnail: "https://placehold.co/800x450/1b365d/ffffff?text=PORSENI+SMAN+45",
+                Penulis_ID: "reporter",
+                Penulis_Nama: "Ahmad Jurnalis",
+                Tanggal: "2026-03-10 14:15",
+                Status_Approval: "Approved",
+                Catatan_Pemred: "",
+                Is_Headline: false,
+                View_Count: 189
+            },
+            {
+                ID_Berita: "BRT-4503",
+                Judul: "Menjaga Keasrian Lingkungan Sekolah melalui Program Budidaya Hidroponik",
+                Slug: "budidaya-hidroponik-sman45",
+                Kategori: "Opini & Artikel",
+                Isi_Berita: "<p>Kesadaran akan kelestarian lingkungan hidup perlu dipupuk sejak dini di bangku sekolah. Tim Adiwiyata SMAN 45 Jakarta menginisiasi instalasi tanaman hidroponik di area belakang ruang kelas XII.</p>",
+                Ringkasan: "Ulasan mengenai dampak positif gerakan hijau sekolah dan penanaman sayur hidroponik oleh tim Adiwiyata SMAN 45.",
+                URL_Thumbnail: "https://placehold.co/800x450/059669/ffffff?text=GREEN+SMAN+45",
+                Penulis_ID: "reporter",
+                Penulis_Nama: "Siti Reporter",
+                Tanggal: "2026-03-08 09:00",
+                Status_Approval: "Pending",
+                Catatan_Pemred: "",
+                Is_Headline: false,
+                View_Count: 45
+            }
+        ];
+
+        let usersData = [
+            { ID_User: "USR-01", Username: "pemred", Password: "jurn45hebat", Nama_Lengkap: "Budi Santoso (Pemred)", Role: "Pemred", Status_Aktif: true },
+            { ID_User: "USR-02", Username: "reporter", Password: "jurn45hebat", Nama_Lengkap: "Ahmad Jurnalis", Role: "Reporter", Status_Aktif: true }
+        ];
+
+        let currentUser = null; // Stored logged in user object
+        let activeCategoryFilter = "ALL";
+
+        window.onload = function() {
+            if (!IS_PREVIEW) {
+                document.getElementById('preview-banner').style.display = 'none';
+                loadDataFromGAS();
+            } else {
+                renderPublicFeed();
+            }
+            checkPersistedSession();
+        };
+
+        function renderPublicFeed() {
+            const headlineContainer = document.getElementById('headline-container');
+            const newsGrid = document.getElementById('news-grid');
+            
+            // Filter hanya berita approved
+            let approvedArticles = articlesData.filter(a => a.Status_Approval === 'Approved');
+
+            // Apply category filter
+            if (activeCategoryFilter !== 'ALL') {
+                approvedArticles = approvedArticles.filter(a => a.Kategori === activeCategoryFilter);
+            }
+
+            // Search Filter
+            const searchQuery = document.getElementById('search-input')?.value.toLowerCase() || '';
+            if (searchQuery) {
+                approvedArticles = approvedArticles.filter(a => 
+                    a.Judul.toLowerCase().includes(searchQuery) || 
+                    a.Ringkasan.toLowerCase().includes(searchQuery) ||
+                    a.Penulis_Nama.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            document.getElementById('article-count-badge').innerText = `Menampilkan ${approvedArticles.length} artikel terbit`;
+
+            // 1. Render Headlines (Filter is_headline === true or top 1)
+            const headlines = approvedArticles.filter(a => a.Is_Headline);
+            const mainHeadline = headlines.length > 0 ? headlines[0] : approvedArticles[0];
+
+            if (mainHeadline) {
+                headlineContainer.innerHTML = `
+                    <div class="lg:col-span-2 relative rounded-2xl overflow-hidden shadow-lg group cursor-pointer border border-slate-200" onclick="readArticle('${mainHeadline.ID_Berita}')">
+                        <img src="${mainHeadline.URL_Thumbnail}" class="w-full h-80 lg:h-96 object-cover group-hover:scale-105 transition duration-500" alt="Headline Cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/60 to-transparent p-6 flex flex-col justify-end">
+                            <span class="bg-gold-500 text-navy-900 text-xs font-bold px-3 py-1 rounded-full w-max mb-2 uppercase tracking-wide">${mainHeadline.Kategori}</span>
+                            <h1 class="text-white text-xl lg:text-3xl font-extrabold line-clamp-2 leading-tight">${mainHeadline.Judul}</h1>
+                            <p class="text-slate-300 text-xs sm:text-sm mt-2 line-clamp-2 font-normal">${mainHeadline.Ringkasan}</p>
+                            <div class="flex items-center space-x-4 text-xs text-slate-300 mt-4">
+                                <span><i class="far fa-user mr-1 text-gold-400"></i> ${mainHeadline.Penulis_Nama}</span>
+                                <span><i class="far fa-clock mr-1 text-gold-400"></i> ${mainHeadline.Tanggal}</span>
+                                <span><i class="far fa-eye mr-1 text-gold-400"></i> ${mainHeadline.View_Count} pembaca</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-navy-900 rounded-2xl p-6 text-white flex flex-col justify-between border border-navy-800 shadow-lg">
+                        <div>
+                            <div class="flex items-center justify-between mb-4 border-b border-navy-700 pb-3">
+                                <span class="text-gold-500 font-bold text-sm tracking-wider uppercase"><i class="fas fa-bullhorn mr-1"></i> Tajuk Redaksi</span>
+                                <span class="text-xs text-slate-400">Jurn45 Info</span>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2 text-white">Selamat Datang di Portal Berita SMAN 45 Jakarta</h3>
+                            <p class="text-slate-300 text-xs leading-relaxed">Wadah ekspresi, jurnalistik, dan dokumentasi seluruh dinamika kegiatan siswa serta civitas akademika SMAN 45 Jakarta.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-navy-700 text-xs text-slate-400">
+                            Punya karya tulis atau liputan acara? Ajukan draf Anda melalui Portal Redaksi Jurn45!
+                        </div>
+                    </div>
+                `;
+            } else {
+                headlineContainer.innerHTML = `<div class="col-span-3 bg-white p-8 text-center text-slate-500 rounded-xl border">Belum ada berita headline yang diterbitkan.</div>`;
+            }
+
+            // 2. Render News Grid Cards
+            if (approvedArticles.length === 0) {
+                newsGrid.innerHTML = `
+                    <div class="col-span-full bg-white p-12 text-center rounded-2xl border border-slate-200">
+                        <i class="fas fa-newspaper text-4xl text-slate-300 mb-3"></i>
+                        <p class="text-slate-500 font-medium">Tidak ada artikel berita yang ditemukan.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            newsGrid.innerHTML = approvedArticles.map(article => `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 hover:shadow-md transition flex flex-col cursor-pointer" onclick="readArticle('${article.ID_Berita}')">
+                    <div class="relative h-48 bg-slate-100 overflow-hidden">
+                        <img src="${article.URL_Thumbnail}" alt="Article Cover" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                        <span class="absolute top-3 left-3 bg-navy-900/90 text-gold-400 text-xs font-bold px-2.5 py-1 rounded-md backdrop-blur-sm">
+                            ${article.Kategori}
+                        </span>
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base mb-2 line-clamp-2 hover:text-navy-700">${article.Judul}</h3>
+                            <p class="text-slate-600 text-xs line-clamp-3 leading-relaxed mb-4">${article.Ringkasan}</p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                            <span class="font-medium text-slate-600"><i class="far fa-user mr-1"></i> ${article.Penulis_Nama}</span>
+                            <span><i class="far fa-eye mr-1"></i> ${article.View_Count}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCategory(cat) {
+            activeCategoryFilter = cat;
+            switchTab('home');
+            
+            // Highlight active category chips
+            document.querySelectorAll('.cat-chip').forEach(btn => {
+                if(btn.innerText.trim() === cat || (cat === 'ALL' && btn.innerText.trim() === 'Semua')) {
+                    btn.className = "cat-chip bg-navy-900 text-white px-3 py-1 rounded-full text-xs font-medium";
+                } else {
+                    btn.className = "cat-chip bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-xs font-medium";
+                }
+            });
+
+            renderPublicFeed();
+        }
+
+        function handleSearch() {
+            renderPublicFeed();
+        }
+
+        function readArticle(id) {
+            const article = articlesData.find(a => a.ID_Berita === id);
+            if(!article) return;
+
+            article.View_Count = (article.View_Count || 0) + 1;
+            
+            const modalContent = document.getElementById('read-modal-content');
+            modalContent.innerHTML = `
+                <div class="space-y-4">
+                    <span class="bg-gold-500 text-navy-900 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">${article.Kategori}</span>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-navy-900 leading-tight">${article.Judul}</h1>
+                    <div class="flex items-center space-x-4 text-xs text-slate-500 pb-3 border-b border-slate-200">
+                        <span><i class="fas fa-user text-navy-700 mr-1"></i> <b>${article.Penulis_Nama}</b></span>
+                        <span><i class="fas fa-calendar-alt text-navy-700 mr-1"></i> ${article.Tanggal}</span>
+                        <span><i class="fas fa-eye text-navy-700 mr-1"></i> ${article.View_Count} dibaca</span>
+                    </div>
+                    <img src="${article.URL_Thumbnail}" class="w-full h-64 md:h-80 object-cover rounded-xl shadow-sm" alt="Cover">
+                    <div class="text-slate-800 text-sm sm:text-base leading-relaxed space-y-3 pt-2 font-sans">
+                        ${article.Isi_Berita}
+                    </div>
+                </div>
+            `;
+            document.getElementById('read-modal').classList.remove('hidden');
+            renderPublicFeed();
+        }
+
+        function closeReadModal() {
+            document.getElementById('read-modal').classList.add('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+
+            if (IS_PREVIEW) {
+                const found = usersData.find(usr => usr.Username.toLowerCase() === u.toLowerCase() && usr.Password === p);
+                if (found) {
+                    currentUser = found;
+                    localStorage.setItem('jurn45_user', JSON.stringify(found));
+                    closeLoginModal();
+                    showToast(`Selamat datang kembali, ${found.Nama_Lengkap}!`, 'success');
+                    updateAuthUI();
+                    switchTab('dashboard');
+                } else {
+                    showToast('Username atau password salah!', 'error');
+                }
+            } else {
+                // Production fetch request to GAS
+                fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'login', username: u, password: p })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        currentUser = res.user;
+                        localStorage.setItem('jurn45_user', JSON.stringify(res.user));
+                        closeLoginModal();
+                        showToast(`Login Berhasil!`, 'success');
+                        updateAuthUI();
+                        loadDataFromGAS();
+                        switchTab('dashboard');
+                    } else {
+                        showToast(res.message || 'Login gagal', 'error');
+                    }
+                })
+                .catch(err => showToast('Error koneksi GAS backend', 'error'));
+            }
+        }
+
+        function checkPersistedSession() {
+            const saved = localStorage.getItem('jurn45_user');
+            if (saved) {
+                try {
+                    currentUser = JSON.parse(saved);
+                    updateAuthUI();
+                } catch(e) {
+                    localStorage.removeItem('jurn45_user');
+                }
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('jurn45_user');
+            updateAuthUI();
+            switchTab('home');
+            showToast('Anda telah keluar dari Portal Redaksi', 'info');
+        }
+
+        function updateAuthUI() {
+            const container = document.getElementById('auth-button-container');
+            if (currentUser) {
+                container.innerHTML = `
+                    <button onclick="switchTab('dashboard')" class="bg-navy-800 text-gold-400 border border-gold-500 hover:bg-navy-700 font-bold px-4 py-2 rounded-lg text-sm transition flex items-center shadow">
+                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard (${currentUser.Role})
+                    </button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button onclick="openLoginModal()" class="bg-gold-500 hover:bg-gold-600 text-navy-900 font-bold px-4 py-2 rounded-lg text-sm transition flex items-center shadow">
+                        <i class="fas fa-user-lock mr-2"></i> Portal Redaksi
+                    </button>
+                `;
+            }
+        }
+
+        function renderDashboard() {
+            if (!currentUser) return;
+
+            document.getElementById('dashboard-user-name').innerText = currentUser.Nama_Lengkap;
+            document.getElementById('dashboard-user-role').innerText = currentUser.Role;
+
+            // Stats calculation
+            const published = articlesData.filter(a => a.Status_Approval === 'Approved').length;
+            const pending = articlesData.filter(a => a.Status_Approval === 'Pending').length;
+            const drafts = articlesData.filter(a => a.Penulis_ID === currentUser.Username && a.Status_Approval === 'Draft').length;
+            const rejected = articlesData.filter(a => a.Penulis_ID === currentUser.Username && a.Status_Approval === 'Rejected').length;
+
+            document.getElementById('stat-published').innerText = published;
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-drafts').innerText = drafts;
+            document.getElementById('stat-rejected').innerText = rejected;
+
+            // Sembunyikan tab khusus Pemred jika role Reporter
+            const pemredTabButtons = document.querySelectorAll('.dashtab-pemred-only');
+            pemredTabButtons.forEach(btn => {
+                if (currentUser.Role !== 'Pemred') {
+                    btn.classList.add('hidden');
+                } else {
+                    btn.classList.remove('hidden');
+                }
+            });
+
+            renderMyArticlesTable();
+            renderApprovalTable();
+            renderUsersTable();
+        }
+
+        function renderMyArticlesTable() {
+            const tbody = document.getElementById('table-my-articles');
+            let userArticles = articlesData;
+
+            if (currentUser.Role !== 'Pemred') {
+                userArticles = articlesData.filter(a => a.Penulis_ID === currentUser.Username);
+            }
+
+            if (userArticles.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Belum ada artikel yang ditulis.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = userArticles.map(a => {
+                let badgeClass = "bg-slate-100 text-slate-700";
+                if(a.Status_Approval === 'Approved') badgeClass = "bg-green-100 text-green-800 font-bold";
+                if(a.Status_Approval === 'Pending') badgeClass = "bg-amber-100 text-amber-800 font-bold";
+                if(a.Status_Approval === 'Rejected') badgeClass = "bg-red-100 text-red-800 font-bold";
+
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-3 px-4">
+                            <div class="font-bold text-slate-800">${a.Judul}</div>
+                            <div class="text-xs text-slate-400">ID: ${a.ID_Berita} | Penulis: ${a.Penulis_Nama}</div>
+                            ${a.Catatan_Pemred ? `<div class="text-xs text-red-600 font-medium mt-1"><i class="fas fa-comment-dots mr-1"></i> Catatan Pemred: ${a.Catatan_Pemred}</div>` : ''}
+                        </td>
+                        <td class="py-3 px-4"><span class="text-xs bg-slate-100 px-2.5 py-1 rounded-md font-medium text-slate-600">${a.Kategori}</span></td>
+                        <td class="py-3 px-4 text-xs text-slate-500">${a.Tanggal}</td>
+                        <td class="py-3 px-4"><span class="text-xs px-2 py-1 rounded ${badgeClass}">${a.Status_Approval}</span></td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="editArticle('${a.ID_Berita}')" class="text-navy-700 hover:text-navy-900 mr-2 p-1" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteArticle('${a.ID_Berita}')" class="text-red-500 hover:text-red-700 p-1" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderApprovalTable() {
+            const tbody = document.getElementById('table-approval');
+            const pendingList = articlesData.filter(a => a.Status_Approval === 'Pending');
+
+            if (pendingList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">Tidak ada pengajuan berita yang perlu direview saat ini.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pendingList.map(a => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-slate-800">${a.Judul}</div>
+                        <div class="text-xs text-slate-400">Ditulis oleh: <b>${a.Penulis_Nama}</b></div>
+                    </td>
+                    <td class="py-3 px-4"><span class="text-xs bg-amber-100 text-amber-900 px-2 py-1 rounded">${a.Kategori}</span></td>
+                    <td class="py-3 px-4 text-xs text-slate-500">${a.Tanggal}</td>
+                    <td class="py-3 px-4"><span class="text-xs bg-amber-500 text-white font-bold px-2 py-0.5 rounded">Pending</span></td>
+                    <td class="py-3 px-4 text-center space-x-1">
+                        <button onclick="readArticle('${a.ID_Berita}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded text-xs font-semibold">Intip</button>
+                        <button onclick="approveArticle('${a.ID_Berita}')" class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1 rounded text-xs font-bold"><i class="fas fa-check mr-1"></i> Approve</button>
+                        <button onclick="openRejectModal('${a.ID_Berita}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-xs font-bold"><i class="fas fa-times mr-1"></i> Tolak</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('table-users');
+            tbody.innerHTML = usersData.map(u => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4 font-bold text-slate-800">${u.Nama_Lengkap}</td>
+                    <td class="py-3 px-4 font-mono text-xs text-slate-600">${u.Username}</td>
+                    <td class="py-3 px-4"><span class="text-xs bg-navy-100 text-navy-800 font-bold px-2.5 py-1 rounded-full">${u.Role}</span></td>
+                    <td class="py-3 px-4"><span class="text-xs text-green-600 font-bold"><i class="fas fa-circle text-[8px] mr-1"></i> Aktif</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function openNewArticleModal() {
+            document.getElementById('edit-article-id').value = '';
+            document.getElementById('editor-judul').value = '';
+            document.getElementById('editor-kategori').value = 'Kabar 45';
+            document.getElementById('editor-thumbnail').value = '';
+            document.getElementById('editor-ringkasan').value = '';
+            document.getElementById('editor-isi').value = '';
+            document.getElementById('editor-is-headline').checked = false;
+            document.getElementById('editor-title-text').innerHTML = `<i class="fas fa-pen-square text-gold-500 mr-2"></i> Tulis Artikel Berita Baru`;
+            document.getElementById('editor-modal').classList.remove('hidden');
+        }
+
+        function closeEditorModal() {
+            document.getElementById('editor-modal').classList.add('hidden');
+        }
+
+        function handleSaveArticle(e) {
+            e.preventDefault();
+            const submitter = e.submitter ? e.submitter.value : 'submit';
+            const statusTarget = submitter === 'draft' ? 'Draft' : 'Pending';
+
+            const articleId = document.getElementById('edit-article-id').value;
+            const judul = document.getElementById('editor-judul').value;
+            const kategori = document.getElementById('editor-kategori').value;
+            const thumbnail = document.getElementById('editor-thumbnail').value || 'https://placehold.co/800x450/0f2647/ffffff?text=JURN45+NEWS';
+            const ringkasan = document.getElementById('editor-ringkasan').value;
+            const isi = document.getElementById('editor-isi').value;
+            const isHeadline = document.getElementById('editor-is-headline').checked;
+
+            if (articleId) {
+                // Update existing
+                const index = articlesData.findIndex(a => a.ID_Berita === articleId);
+                if (index !== -1) {
+                    articlesData[index].Judul = judul;
+                    articlesData[index].Kategori = kategori;
+                    articlesData[index].URL_Thumbnail = thumbnail;
+                    articlesData[index].Ringkasan = ringkasan;
+                    articlesData[index].Isi_Berita = isi;
+                    articlesData[index].Is_Headline = isHeadline;
+                    articlesData[index].Status_Approval = statusTarget;
+                    showToast('Artikel berhasil diperbarui!', 'success');
+                }
+            } else {
+                // Create new
+                const newObj = {
+                    ID_Berita: 'BRT-' + Math.floor(1000 + Math.random() * 9000),
+                    Judul: judul,
+                    Slug: judul.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                    Kategori: kategori,
+                    Isi_Berita: isi,
+                    Ringkasan: ringkasan,
+                    URL_Thumbnail: thumbnail,
+                    Penulis_ID: currentUser.Username,
+                    Penulis_Nama: currentUser.Nama_Lengkap,
+                    Tanggal: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                    Status_Approval: statusTarget,
+                    Catatan_Pemred: '',
+                    Is_Headline: isHeadline,
+                    View_Count: 0
+                };
+                articlesData.unshift(newObj);
+                showToast(statusTarget === 'Draft' ? 'Draf disimpan' : 'Artikel diajukan ke Pemred', 'success');
+            }
+
+            closeEditorModal();
+            renderDashboard();
+            renderPublicFeed();
+        }
+
+        function editArticle(id) {
+            const article = articlesData.find(a => a.ID_Berita === id);
+            if (!article) return;
+
+            document.getElementById('edit-article-id').value = article.ID_Berita;
+            document.getElementById('editor-judul').value = article.Judul;
+            document.getElementById('editor-kategori').value = article.Kategori;
+            document.getElementById('editor-thumbnail').value = article.URL_Thumbnail;
+            document.getElementById('editor-ringkasan').value = article.Ringkasan;
+            document.getElementById('editor-isi').value = article.Isi_Berita;
+            document.getElementById('editor-is-headline').checked = article.Is_Headline;
+            document.getElementById('editor-title-text').innerHTML = `<i class="fas fa-edit text-gold-500 mr-2"></i> Edit Artikel Berita`;
+            document.getElementById('editor-modal').classList.remove('hidden');
+        }
+
+        function deleteArticle(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus artikel berita ini?")) {
+                articlesData = articlesData.filter(a => a.ID_Berita !== id);
+                showToast('Artikel berhasil dihapus', 'info');
+                renderDashboard();
+                renderPublicFeed();
+            }
+        }
+
+        function approveArticle(id) {
+            const article = articlesData.find(a => a.ID_Berita === id);
+            if (article) {
+                article.Status_Approval = 'Approved';
+                article.Catatan_Pemred = '';
+                showToast(`Artikel "${article.Judul}" disetujui & terbit!`, 'success');
+                renderDashboard();
+                renderPublicFeed();
+            }
+        }
+
+        function openRejectModal(id) {
+            document.getElementById('reject-article-id').value = id;
+            document.getElementById('reject-notes').value = '';
+            document.getElementById('reject-modal').classList.remove('hidden');
+        }
+
+        function closeRejectModal() {
+            document.getElementById('reject-modal').classList.add('hidden');
+        }
+
+        function confirmRejectArticle() {
+            const id = document.getElementById('reject-article-id').value;
+            const notes = document.getElementById('reject-notes').value.trim();
+            const article = articlesData.find(a => a.ID_Berita === id);
+
+            if (article) {
+                article.Status_Approval = 'Rejected';
+                article.Catatan_Pemred = notes || 'Perlu perbaikan tata bahasa dan konten.';
+                showToast(`Artikel dikembalikan ke jurnalis untuk revisi.`, 'info');
+                closeRejectModal();
+                renderDashboard();
+            }
+        }
+
+        function handleAddUser(e) {
+            e.preventDefault();
+            const fullname = document.getElementById('new-user-fullname').value;
+            const username = document.getElementById('new-user-username').value;
+            const password = document.getElementById('new-user-password').value;
+            const role = document.getElementById('new-user-role').value;
+
+            const newU = {
+                ID_User: 'USR-' + (usersData.length + 1),
+                Username: username,
+                Password: password,
+                Nama_Lengkap: fullname,
+                Role: role,
+                Status_Aktif: true
+            };
+            usersData.push(newU);
+            showToast(`Pengguna ${fullname} (${role}) berhasil didaftarkan!`, 'success');
+            document.getElementById('new-user-fullname').value = '';
+            document.getElementById('new-user-username').value = '';
+            document.getElementById('new-user-password').value = '';
+            renderUsersTable();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            if (tabId === 'dashboard') {
+                if (!currentUser) {
+                    openLoginModal();
+                    switchTab('home');
+                } else {
+                    renderDashboard();
+                }
+            }
+        }
+
+        function switchDashTab(dashTabId) {
+            document.querySelectorAll('.dashtab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`dashtab-${dashTabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('[id^="dashtab-btn-"]').forEach(btn => {
+                btn.className = "py-3 px-4 font-semibold text-sm text-slate-500 border-b-2 border-transparent hover:text-navy-900";
+            });
+            document.getElementById(`dashtab-btn-${dashTabId}`).className = "py-3 px-4 font-bold text-sm text-navy-900 border-b-2 border-navy-900";
+        }
+
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bg = 'bg-slate-800';
+            if(type === 'success') bg = 'bg-emerald-600';
+            if(type === 'error') bg = 'bg-rose-600';
+            if(type === 'info') bg = 'bg-navy-800';
+
+            toast.className = `${bg} text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg flex items-center space-x-2 transition transform duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `<span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function loadDataFromGAS() {
+            fetch(GAS_URL + '?action=getArticles')
+            .then(res => res.json())
+            .then(res => {
+                if(res.articles) {
+                    articlesData = res.articles;
+                    renderPublicFeed();
+                    if(currentUser) renderDashboard();
+                }
+            })
+            .catch(err => console.error("Err loading GAS data:", err));
+        }
+    </script>
+</body>
+</html>
